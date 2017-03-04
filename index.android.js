@@ -20,76 +20,92 @@ import CustomButton from "./CustomButton";
  * For quota reasons we replaced the Rotten Tomatoes' API with a sample data of
  * their very own API that lives in React Native's Github repo.
  */
+
+// bien nay lay du lieu hien thi tu mot file json
 var REQUEST_URL = 'https://raw.githubusercontent.com/facebook/react-native/master/docs/MoviesExample.json';
 
-var MOCKED_MOVIES_DATA = [
+//bien nay cu roi khong dung nua
+/**var MOCKED_MOVIES_DATA = [
   {title: 'Title', year: '2015', posters: {thumbnail: 'http://i.imgur.com/UePbdph.jpg'}},
 ];
+*/
 
 export default class HelloWorld2 extends Component {
-    constructor (props){
-      super (props);
-      this.state = {
-        dataSource: new ListView.DataSource({
-          rowHasChanged: (row1,row2) => row1 !== row2,
-        }),
-        loaded: false,
-        };
-    }
+  constructor (props){
+    super (props);
+    this.state = {
+      dataSource: new ListView.DataSource({
+        rowHasChanged: (row1,row2) => row1 !== row2,
+      }),
+      loaded: false,
+    };
+  }
 
-    componentDidMount() {
+  // lifecycle len man hinh
+  componentDidMount() {
+    // cau lenh nay de thuc hien viec lay du lieu
     this.fetchData();
   }
 
-    fetchData() {
-      fetch(REQUEST_URL)
-        .then((response)=> response.json())
-        .then((responseData) => {
-          this.setState({
-            dataSource: this.state.dataSource.cloneWithRows(responseData.movies),
-            loaded: true,
-          });
-        })
-        .done();
+//ham nay thuc hien viec lay du lieu tu url phia tren
+  fetchData() {
+    fetch(REQUEST_URL)
+      .then((response)=> response.json())
+      .then((responseData) => {
+        this.setState({
+          dataSource: this.state.dataSource.cloneWithRows(responseData.movies),
+          // lay du lieu xong thi gan vao cai dataSource
+          // sau do thi loaded = true
+          loaded: true,
+        });
+      })
+      .done();
+  }
+
+  render() {
+    // vua mo app len thi bien loaded == false
+    // nen ham se chay cai renderLoadingView de hien thi thong bao ban dau
+    if(!this.state.loaded) {
+      return this.renderLoadingView();
     }
 
-    render() {
-      if(!this.state.loaded) {
-        return this.renderLoadingView();
-      }
-      //var movie = this.state.movies[0];
-      //return this.renderMovie(movie);
-      return(
-          <ListView
-            dataSource = {this.state.dataSource}
-            renderRow = {this.renderMovie}
-            style = {styles.ListView}
-          />
-      )
-    }
-
-    renderLoadingView() {
-      return (
-        <View style={styles.container}>
-          <Text>Loading movies...</Text>
-        </View>
-        );
-      }
-
-    renderMovie(movie) {
-      return (
-        <View style={styles.container}>
-          <Image
-            source={{uri: movie.posters.thumbnail}}
-            style={styles.thumbnail}
-          />
-          <View style={styles.rightContainer}>
-            <Text style={styles.title}>{movie.title}</Text>
-            <Text style={styles.year}>{movie.year}</Text>
-          </View>
-        </View>
+    // sau khi da load xong du lieu thi loaded == true
+    // ham se hien thi ra danh sach cac film
+    return(
+        <ListView
+          dataSource = {this.state.dataSource}
+          renderRow = {this.renderMovie}
+          style = {styles.listView}
+        />
+    )
+  }
+//ham nay hien thi thong bao tai phim
+  renderLoadingView() {
+    return (
+      <View style={styles.container}>
+        <Text> Doi chut nha cung.</Text>
+        <Text> Dang tai phim ve ... </Text>
+      </View>
       );
     }
+
+  // ham nay quy dinh viec hien thi thong tin film tren man hinh
+  // chuc nang cua ham la render 1 movie len man hinh
+  // phai truyen bien 'movie' vao cho ham
+  renderMovie(movie) {
+    return (
+      <View style={styles.container}>
+        <Image
+          source={{uri: movie.posters.thumbnail}}
+          style={styles.thumbnail}
+        />
+        <View style={styles.rightContainer}>
+          <Text style={styles.title}>{movie.title}</Text>
+          <Text style={styles.year}>{movie.year}</Text>
+        </View>
+      </View>
+    );
+  }
 
 }
 
@@ -104,7 +120,6 @@ const styles = StyleSheet.create({
 
   rightContainer: {
     flex : 1,
-    //backgroundColor: 'blue',
   },
 
   welcome: {
